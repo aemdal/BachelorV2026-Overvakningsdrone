@@ -4,7 +4,7 @@ from views.main_window import MainWindow
 from services.video_service import VideoService
 
 BROKER_IP = "100.82.60.17"
-RTSP_URL = f"rtsp://{BROKER_IP}:8554/test"
+RTSP_URL = f"rtsp://{BROKER_IP}:8554/cam"
 
 def main():
     app = QApplication(sys.argv)

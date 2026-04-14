@@ -10,6 +10,7 @@ from PyQt6.QtGui import (
     QPainter,
     QColor,
     QPen,
+    
 )
 import numpy as np
 
@@ -43,14 +44,14 @@ class VideoPanel(QWidget):
         scaled = pixmap.scaled(
             self.video_label.size(),
             Qt.AspectRatioMode.KeepAspectRatio,
-            Qt.TransformationMode.SmoothTransformation
+            Qt.TransformationMode.FastTransformation
         )
         self.video_label.setPixmap(scaled)
 
     def draw_crosshair(self, pixmap: QPixmap) -> QPixmap:
         painter = QPainter(pixmap)
 
-        pen = QPen(QColor(255, 255, 255))
+        pen = QPen(QColor(255, 0, 0))
         pen.setWidth(2)
         painter.setPen(pen)
 
