@@ -53,7 +53,7 @@ class VideoService(QObject):
             return
 
         # Tester å tømme bufferet før vi leser for å redusere latency
-        for _ in range(1): 
+        for _ in range(1):
             self.cap.grab()
         
         ok, frame = self.cap.read()
