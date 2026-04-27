@@ -25,7 +25,7 @@ class DetectionService(QObject):
             
         results = self.model.predict(
             source=frame,
-            conf=0.5,
+            conf=0.6,
             imgsz=640,
             verbose=False,
             device="cpu", # kan skiftes til cuda for å bruke GPU
