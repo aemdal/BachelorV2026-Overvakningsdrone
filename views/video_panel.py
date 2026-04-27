@@ -39,7 +39,7 @@ class VideoPanel(QWidget):
         qimg = QImage(rgb.data, w, h, bytes_per_line, QImage.Format.Format_RGB888)
         pixmap = QPixmap.fromImage(qimg)
 
-        pixmap = self.draw_crosshair(pixmap)
+        pixmap = self.draw_overlays(pixmap)
 
         scaled = pixmap.scaled(
             self.video_label.size(),
@@ -48,9 +48,10 @@ class VideoPanel(QWidget):
         )
         self.video_label.setPixmap(scaled)
 
-    def draw_crosshair(self, pixmap: QPixmap) -> QPixmap:
+    def draw_overlays(self, pixmap: QPixmap) -> QPixmap:
         painter = QPainter(pixmap)
 
+        # Trådkors
         pen = QPen(QColor(255, 0, 0))
         pen.setWidth(2)
         painter.setPen(pen)
@@ -62,5 +63,34 @@ class VideoPanel(QWidget):
         painter.drawLine(center_x - size, center_y, center_x + size, center_y)
         painter.drawLine(center_x, center_y - size, center_x, center_y + size)
 
+        # Deteksjonsbokser
+        for detection in self.detections:
+            x1, y1, x2, y2 = detection["box"]
+            name = detection["class_name"]
+            conf = detection["confidence"]
+
+            # Tegn boks
+            box_pen = QPen(QColor(0, 0, 255))
+            box_pen.setWidth(2)
+            painter.setPen(box_pen)
+            painter.drawRect(x1, y1, x2 - x1, y2 - y1)
+
+            # Tegn label med bakgrunn
+            label = f"{name} {conf:.0%}"
+            font = painter.font()
+            font.setPointSize(10)
+            painter.setFont(font)
+
+            # Bakgrunn for tekst
+            painter.fillRect(x1, y1 - 20, len(label) * 10, 20, QColor(0, 0, 255, 150))
+
+            # Tekst
+            painter.setPen(QColor(255, 255, 255))
+            painter.drawText(x1 + 2, y1 - 5, label)
+            
         painter.end()
         return pixmap
+    
+    def update_detections(self, detections: list):
+        self.detections = detections
+        
