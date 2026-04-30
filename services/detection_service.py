@@ -6,7 +6,7 @@ class DetectionService(QObject):
 
     detections_ready = pyqtSignal(list)
 
-    def __init__(self, model_path="yolov8n.pt"):
+    def __init__(self, model_path="yolov8m.pt"):
         super().__init__()
         
         self.model = YOLO(model_path)

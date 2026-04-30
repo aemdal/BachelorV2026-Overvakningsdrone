@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QApplication
 from views.main_window import MainWindow
 from services.video_service import VideoService
 from services.detection_service import DetectionService
+from services.gps_service import GPSService
 
 BROKER_IP = "100.82.60.17"
 RTSP_URL = f"rtsp://{BROKER_IP}:8554/cam"
@@ -14,6 +15,7 @@ def main():
     # Opprett services
     video_service = VideoService()
     detection_service = DetectionService()
+    gps_service = GPSService(broker_ip=BROKER_IP)
 
     # Video: service -> view
     video_service.frame_ready.connect(window.video_panel.update_frame)
@@ -30,6 +32,12 @@ def main():
             [f"{d['class_name']} ({d['confidence']:.0%})" for d in dets]
         )
     )
+
+    # GPS: service -> kart
+    gps_service.position_updated.connect(window.map_panel.update_position)
+
+    # GPS: service -> info panel
+    gps_service.position_updated.connect(window.info_panel.update_gps)
 
     # Koble til knapp
     window.connect_button.clicked.connect(lambda: video_service.connect(RTSP_URL))
