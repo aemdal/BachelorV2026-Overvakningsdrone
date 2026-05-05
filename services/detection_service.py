@@ -6,13 +6,16 @@ class DetectionService(QObject):
 
     detections_ready = pyqtSignal(list)
 
-    def __init__(self, model_path="yolov8m.pt"):
+    def __init__(self, model_path: str = "yolov8m.pt", custom_classes: list = None):
         super().__init__()
         
         self.model = YOLO(model_path)
         self.enabled = False
         self.detect_every_n_frames = 10
         self._frame_count = 0
+        
+        if custom_classes is not None:
+            self.model.set_classes(custom_classes)
 
     def process_frame(self, frame: np.ndarray):
         if not self.enabled:
@@ -25,7 +28,7 @@ class DetectionService(QObject):
             
         results = self.model.predict(
             source=frame,
-            conf=0.5,
+            conf=0.4,
             imgsz=640,
             verbose=False,
             device="cpu", # kan skiftes til cuda for å bruke GPU

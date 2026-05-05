@@ -14,7 +14,13 @@ def main():
 
     # Opprett services
     video_service = VideoService()
-    detection_service = DetectionService()
+    # detection_service = DetectionService()
+    detection_service = DetectionService(
+        model_path="yolov8m-worldv2.pt",
+        custom_classes=[
+            "person", "coffee cup", "fan", "chair", "tshirt", "clock",
+        ]
+    )
     gps_service = GPSService(broker_ip=BROKER_IP)
 
     # Video: service -> view
