@@ -1,9 +1,11 @@
 import sys
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication
 from views.main_window import MainWindow
 from services.video_service import VideoService
 from services.detection_service import DetectionService
 from services.gps_service import GPSService
+from services.ptz_service import PTZService
 
 BROKER_IP = "100.82.60.17"
 RTSP_URL = f"rtsp://{BROKER_IP}:8554/cam"
@@ -22,6 +24,7 @@ def main():
         ]
     )
     gps_service = GPSService(broker_ip=BROKER_IP)
+    ptz_service = PTZService(broker_ip=BROKER_IP)
 
     # Video: service -> view
     video_service.frame_ready.connect(window.video_panel.update_frame)
@@ -52,6 +55,9 @@ def main():
     window.detection_button.clicked.connect(
         lambda: detection_service.set_enabled(not detection_service.enabled)
     )
+
+    # PTZ: control panel -> service
+    window.control_panel.ptz_command.connect(ptz_service.send_command)
 
     
     window.show()

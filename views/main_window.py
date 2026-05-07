@@ -84,3 +84,26 @@ class MainWindow(QMainWindow):
         # -- Juster størrelsesforhold --
         content_layout.setStretch(0, 3)  # Venstre kolonne tar 3 ganger mer plass enn høyre
         content_layout.setStretch(1, 1)  # Høyre kolonne tar 1 del av plassen
+
+        QApplication.instance().installEventFilter(self)
+    
+    def eventFilter(self, obj, event):
+        key_map = {
+            Qt.Key.Key_W: "up",
+            Qt.Key.Key_S: "down",
+            Qt.Key.Key_A: "left",
+            Qt.Key.Key_D: "right",
+        }
+
+        if event.type() == event.Type.KeyPress and not event.isAutoRepeat():
+            direction = key_map.get(event.key())
+            if direction:
+                self.control_panel.start_command(direction)
+                return True
+
+        elif event.type() == event.Type.KeyRelease and not event.isAutoRepeat():
+            if event.key() in key_map:
+                self.control_panel.stop_command()
+                return True
+
+        return super().eventFilter(obj, event)
