@@ -6,6 +6,7 @@ from services.video_service import VideoService
 from services.detection_service import DetectionService
 from services.gps_service import GPSService
 from services.ptz_service import PTZService
+from services.weather_service import WeatherService
 
 BROKER_IP = "100.82.60.17"
 RTSP_URL = f"rtsp://{BROKER_IP}:8554/cam"
@@ -25,6 +26,7 @@ def main():
     )
     gps_service = GPSService(broker_ip=BROKER_IP)
     ptz_service = PTZService(broker_ip=BROKER_IP)
+    weather_service = WeatherService()
 
     # Video: service -> view
     video_service.frame_ready.connect(window.video_panel.update_frame)
@@ -47,6 +49,12 @@ def main():
 
     # GPS: service -> info panel
     gps_service.position_updated.connect(window.info_panel.update_gps)
+
+    # GPS -> vær
+    gps_service.position_updated.connect(weather_service.update_position)
+
+    # Vær: service -> info panel
+    weather_service.temperature_updated.connect(window.info_panel.update_temperature)
 
     # Koble til knapp
     window.connect_button.clicked.connect(lambda: video_service.connect(RTSP_URL))
