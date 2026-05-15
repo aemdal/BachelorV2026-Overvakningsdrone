@@ -7,9 +7,10 @@ from services.detection_service import DetectionService
 from services.gps_service import GPSService
 from services.ptz_service import PTZService
 from services.weather_service import WeatherService
+from services.distance_service import DistanceService
 
 BROKER_IP = "100.82.60.17"
-RTSP_URL = f"rtsp://{BROKER_IP}:8554/cam"
+RTSP_URL = f"rtsp://100.74.132.102:8554/cam"
 
 def main():
     app = QApplication(sys.argv)
@@ -17,16 +18,21 @@ def main():
 
     # Opprett services
     video_service = VideoService()
+
     # detection_service = DetectionService()
     detection_service = DetectionService(
-        model_path="yolov8m-worldv2.pt",
+        model_path="yolov8l-worldv2.pt",
         custom_classes=[
-            "person", "coffee cup", "fan", "chair", "tshirt", "clock",
+            "person", "coffee cup", "fan", "chair", "laptop", "clock", "tree", "car",
         ]
     )
     gps_service = GPSService(broker_ip=BROKER_IP)
+
     ptz_service = PTZService(broker_ip=BROKER_IP)
+    
     weather_service = WeatherService()
+    
+    distance_service = DistanceService(broker_ip=BROKER_IP)
 
     # Video: service -> view
     video_service.frame_ready.connect(window.video_panel.update_frame)
@@ -66,6 +72,9 @@ def main():
 
     # PTZ: control panel -> service
     window.control_panel.ptz_command.connect(ptz_service.send_command)
+
+    # Avstand: service -> info panel
+    distance_service.distance_updated.connect(window.info_panel.update_distance)
 
     
     window.show()

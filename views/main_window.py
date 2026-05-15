@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        # -- Vindu setup --
+        # Vindu
         self.setWindowTitle("Dashboard - Bachelor v26")
         self.setMinimumSize(1200, 700)
 
@@ -30,18 +30,18 @@ class MainWindow(QMainWindow):
         main_layout = QVBoxLayout()
         central.setLayout(main_layout)
 
-        # -- Topplinje --
+        # Topplinje
         toolbar_layout = QHBoxLayout()
 
         title_label = QLabel("Dashboard - Bachelor v26")
         toolbar_layout.addWidget(title_label)
 
-        # -- Rullgardin for kameravalg --
+        # Rullgardin for kameravalg
         self.view_selector = QComboBox()
         self.view_selector.addItems(["Rutenett", "Kamera 1", "Kamera 2", "Kamera 3", "Kamera 4"])
         toolbar_layout.addWidget(self.view_selector)
 
-        # -- Knapper --
+        # Knapper
         self.detection_button = QPushButton("Objektgjenkjenning: AV")
         toolbar_layout.addWidget(self.detection_button)
 
@@ -50,11 +50,11 @@ class MainWindow(QMainWindow):
 
         main_layout.addLayout(toolbar_layout)
 
-        # -- Innholdsområde --
+        # Innholdsområde
         content_layout = QHBoxLayout()
         main_layout.addLayout(content_layout)
 
-        # -- Venstre kolonne: Videostrøm og kamerakontroller --
+        # Venstre kolonne: Videostrøm og kamerakontroller
         left_column = QVBoxLayout()
         
         # venstre kolonne - videostrøm
@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
 
         content_layout.addLayout(left_column)
 
-        # -- Høyre kolonne: Kart og informasjon --
+        # Høyre kolonne: Kart og informasjon
         right_column = QVBoxLayout()
 
         # høyre kolonne - kart
@@ -81,7 +81,7 @@ class MainWindow(QMainWindow):
 
         content_layout.addLayout(right_column)
 
-        # -- Juster størrelsesforhold --
+        # Juster størrelsesforhold
         content_layout.setStretch(0, 3)  # Venstre kolonne tar 3 ganger mer plass enn høyre
         content_layout.setStretch(1, 1)  # Høyre kolonne tar 1 del av plassen
 
@@ -102,8 +102,9 @@ class MainWindow(QMainWindow):
                 return True
 
         elif event.type() == event.Type.KeyRelease and not event.isAutoRepeat():
-            if event.key() in key_map:
-                self.control_panel.stop_command()
+            direction = key_map.get(event.key())
+            if direction:
+                self.control_panel.stop_command(direction)
                 return True
 
         return super().eventFilter(obj, event)

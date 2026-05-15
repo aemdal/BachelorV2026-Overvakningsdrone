@@ -38,9 +38,12 @@ class ControlPanel(QWidget):
         bottom_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(bottom_row)
 
+        # set med aktive retninger for å håndtere kontinuerlig bevegelse
+        self.active_directions = set()
+
         # Timer for kontinuerlig bevegelse
         self.repeat_timer = QTimer(self)
-        self.repeat_timer.setInterval(150)
+        self.repeat_timer.setInterval(100)
         self.repeat_timer.timeout.connect(self.send_repeat_command)
         self.active_direction = None
 
@@ -55,14 +58,16 @@ class ControlPanel(QWidget):
             button.released.connect(self.stop_command)
 
     def start_command(self, direction: str):
-        self.active_direction = direction
+        self.active_directions.add(direction)
         self.ptz_command.emit(direction)
-        self.repeat_timer.start()
+        if not self.repeat_timer.isActive():
+            self.repeat_timer.start()
 
-    def stop_command(self):
-        self.repeat_timer.stop()
-        self.active_direction = None
+    def stop_command(self, direction: str):
+        self.active_directions.discard(direction)
+        if not self.active_directions:
+            self.repeat_timer.stop()
 
     def send_repeat_command(self):
-        if self.active_direction:
-            self.ptz_command.emit(self.active_direction)
+        for direction in self.active_directions:
+            self.ptz_command.emit(direction)
